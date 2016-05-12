@@ -1,0 +1,24 @@
+{
+    "manifest_version": 2,
+    "name": "calculate overtime",
+    "version": "0.0.5",
+    "description": "Calculate overtime",
+    "browser_action": {
+        "default_icon":{
+            "19": "image/star.png",
+            "38": "image/star.png"
+        },
+        "default_title": "Calculate overtime",
+        "default_popup": "popup.html"
+    },
+    "icons": {
+        "16": "image/star.png",
+        "48": "image/star.png",
+        "128": "image/star.png"
+    },
+    "options_page": "options.html",
+    "permissions": [
+        "http://kq.oa.sumavision.com/Users.aspx?act=*"
+    ]
+}
+

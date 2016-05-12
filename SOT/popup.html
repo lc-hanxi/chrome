@@ -1,0 +1,49 @@
+<html>
+<head>
+    <style>
+        body {
+            width: 200px;
+            height: 100px;
+            background: #DDFFFF;
+        }
+        input {
+            margin: 5px;
+            width: 80px;
+        }
+        select {
+            margin: 5px;
+            width: 60px;
+        }
+        div#raw_data{
+            width: 55%;
+            float:left;
+            background: #D6FFFF;
+        }
+        div#cal_data{
+            width: 43%;
+            float:right;
+        }
+        #calendar tr td{
+            cursor:pointer;
+        }
+    </style>
+    <script src="js/jscript.datetime.js"></script>
+</head>
+<body>
+    <form>
+    工号: <input id="num" type="text" />
+    <br />
+    时间: <select id="year" ></select>年
+          <select id="month"></select>月 
+    <br />
+    请选择节假日(不含双休):
+    <br />
+    <table id="calendar" border="0"></table>
+    <br />
+    <input id="calculate" type="button" value="加班统计" />
+    <br />
+    <script src="js/my_overtime.js"></script>
+    </form>
+</body>
+</html>
+
