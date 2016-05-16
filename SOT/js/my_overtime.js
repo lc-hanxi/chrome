@@ -173,8 +173,8 @@ function cal_overtime(){
                     d2h++;
                     sl[0].appendChild(sli);
                 }
-		var sli2 = sli.cloneNode(true);
-		sli2.style.color = "black";
+        var sli2 = sli.cloneNode(true);
+        sli2.style.color = "black";
                 sl[4].appendChild(sli2);
             }        
         } 
@@ -214,7 +214,12 @@ function cal_overtime(){
     document.body.appendChild(final_show);
 }
 
+var capture = 0;
+
 document.getElementById('calculate').onclick = function(){
+    if(capture == 1)
+	    return;
+    capture = 1;
     var num = document.getElementById('num').value;
     var yearSel = document.getElementById('year');
     var monSel = document.getElementById('month');
