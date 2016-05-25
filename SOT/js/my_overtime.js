@@ -1,12 +1,3 @@
-var holdat = new Array();
-for(var i = 0; i < 32; i++){
-    holdat[i] = '0';
-}
-
-var ys = document.getElementById('year');
-var ms = document.getElementById('month');
-var mdt = new Date();
-
 var d2h = 0; //2h加班次数
 var d2_5h = 0; //2.5h加班次数
 var d3h = 0; //3h加班次数
@@ -31,70 +22,6 @@ for(var i = 0; i < 5; i++){
     final_show.appendChild(sl[i]);
 }
 
-
-//按设置初始化员工号码
-var num = localStorage.number;
-num = num ? num : '12657';
-document.getElementById("num").value = num;
-
-//初始化选择年月列表，默认为当前月
-var yel = document.createElement('option');
-yel.text = mdt.getFullYear();
-ys.add(yel);
-
-var rc = mdt.getMonth() + 1;
-for(var i = 0; i < rc; i++){
-    var mel = document.createElement('option');
-    mel.text = i + 1;
-    if(i == rc - 1)
-        mel.selected = "selected";
-    ms.add(mel);
-}
-
-//初始化选择月的日历，默认为当前月
-var ct = document.getElementById("calendar");
-ct.addEventListener("mousedown", whichElement);
-for(var i = 0; i < 7; i++){
-    var rw = ct.insertRow(0);
-    for(var j = 0; j < 7; j++){
-        var cl = rw.insertCell(j);
-        cl.id = (6 - i) * 7 + j;
-    }
-}
-
-var weekdays = new Array("日", "一", "二", "三", "四", "五", "六");
-for(var i = 0; i < 7; ++i){
-    ct.rows[0].cells[i].innerText = weekdays[i];
-}
-showCalendar(mdt.getFullYear(), mdt.getMonth());
-
-//按月份显示日历
-function showCalendar(year, month){
-    for(var i = 1; i < 7; i++){
-        for(var j = 0; j < 7; j++){
-          ct.rows[i].cells[j].innerText = "";
-          ct.rows[i].cells[j].style.background = "white";
-          ct.rows[i].cells[j].style.color = "black";
-        }
-    }
-    for(var i = 0; i < 32; i++){
-        holdat[i] = '0';
-    }
-    var ldt = new Date();
-    ldt.setFullYear(year, month, 1); 
-    var st = ldt.getDay();
-    var days = jscript.datetime.getNumberDaysInMonth(month + 1, year);
-    var row = 1;
-    for(var i = 0; i < days; i++){
-        ct.rows[row].cells[st].innerText = i + 1;
-        ++st;
-        if(st >= 7){
-            st = 0;
-            ++row;
-        }
-    }
-}
-
 //发起数据请求函数
 function httpRequest(url, callback){
     var xhr = new XMLHttpRequest();
@@ -107,24 +34,26 @@ function httpRequest(url, callback){
     xhr.send();
 }
 
-
-document.getElementById('month').onchange = function(){
-    var yearSel = document.getElementById('year');
-    var monSel = document.getElementById('month');
-    var year = yearSel.options[yearSel.selectedIndex].text;
-    var month= monSel.options[monSel.selectedIndex].text;
-    showCalendar(year, month - 1);
-}
-
 //返回两个时间相差的小时数
 function timeDiff(time_st, time_ed){
     return (time_ed.getTime() - time_st.getTime()) / (3600 * 1000);   
 }
 
+var weekdays = new Array("日", "一", "二", "三", "四", "五", "六");
+
 function cal_overtime(){
     var lis = document.getElementsByTagName('li');
     for(var i = lis.length - 2; i >= 1 ; i--){
-        var sps = lis[i].innerText.split(' ');
+        //var sps = lis[i].innerText.split(' ');
+        var sps = new Array();
+        var j = 0;
+        var htm = lis[i].innerHTML;
+        var patt1=new RegExp(">([^ ]+?)<","g");
+        var tmp;
+        while((tmp=patt1.exec(htm)) != null){
+            sps[j] = tmp[1];
+            ++j;
+        }
         //1： 日期  2: 姓名  4：工号 5： 上班 6：下班 
         if(ih.innerText == ""){
             ih.innerText = "工号：" + sps[4] + "  姓名：" + sps[2]; 
@@ -150,7 +79,6 @@ function cal_overtime(){
                 ovtm = ovtm - 1;
         }
        
-            
         if(holdat[ta[2]] == '1')
             tt = sps[1] + "  节假日" + sps[5] + " 至 " + sps[6] + " 时长: " + ovtm + "小时";
         else
@@ -173,8 +101,8 @@ function cal_overtime(){
                     d2h++;
                     sl[0].appendChild(sli);
                 }
-        var sli2 = sli.cloneNode(true);
-        sli2.style.color = "black";
+                var sli2 = sli.cloneNode(true);
+                sli2.style.color = "black";
                 sl[4].appendChild(sli2);
             }        
         } 
@@ -213,69 +141,24 @@ function cal_overtime(){
     sh[4].innerText = "休息及节假日加班:";
     document.body.appendChild(final_show);
 }
-
-var capture = 0;
-
-document.getElementById('calculate').onclick = function(){
-    if(capture == 1)
-	    return;
-    capture = 1;
-    var num = document.getElementById('num').value;
-    var yearSel = document.getElementById('year');
-    var monSel = document.getElementById('month');
-    var year = yearSel.options[yearSel.selectedIndex].text;
-    var month = monSel.options[monSel.selectedIndex].text;
-    var days = jscript.datetime.getNumberDaysInMonth(month, year);
-    var stm = year + '-' + month + '-1';
-    var edm = year + '-' + month + '-' + days;
-    httpRequest('http://kq.oa.sumavision.com/Users.aspx?act=&Company=&bm=103&WorkerNO=' + num +
-                '&sttim=' + stm + '&entim=' + edm + '&orderby=0&pagecount=' + days, 
-    function(overtime){
-        //document.write(overtime);
-        while(document.body && document.body.lastChild){
-            document.body.remove(document.body.lastChild);
-        }
-        var nbd = document.createElement("body");
-        document.body = nbd;
-        nbd.style.width = '1000px';
-        nbd.style.background = "#DDFFFF";
-        var rdiv = document.createElement("div");
-        rdiv.id = "raw_data";
-        rdiv.innerHTML = overtime;
-        nbd.appendChild(rdiv);
-        var a0 = document.getElementsByTagName('a')[0];
-        a0.href = 'http://kq.oa.sumavision.com/Users.aspx?act=&Company=&bm=103&WorkerNO=' + num +
-                '&sttim=' + stm + '&entim=' + edm + '&orderby=0&pagecount=' + days + "&intoExcel=true";
-        cal_overtime();
-    });
-}
-
-function whichElement(e){
-    var targ;
-    if (!e) 
-        var e = window.event;
-    if (e.target) 
-        targ = e.target;
-    else if (e.srcElement) 
-        targ = e.srcElement;
-    if (targ.nodeType == 3) // defeat Safari bug
-        targ = targ.parentNode;
-    if(targ.id >= 7 && targ.innerText != ""){
-        if(targ.style.background != "black"){
-            targ.style.background = "black";
-            targ.style.color = "white";
-            holdat[targ.innerText] = 1;
-        }
-        else{
-            targ.style.background = "white";
-            targ.style.color = "black";
-            holdat[targ.innerText] = 0;
-        }
-    }
-}
-
-
-
-
-
-
+ 
+var num = localStorage.query_number;
+var stm = localStorage.query_start;
+var edm = localStorage.query_end;
+var days = localStorage.query_days;
+var holdat = localStorage.query_holidays;
+httpRequest('http://kq.oa.sumavision.com/Users.aspx?act=&Company=&bm=103&WorkerNO=' + num +
+            '&sttim=' + stm + '&entim=' + edm + '&orderby=0&pagecount=' + days, 
+            function(overtime){
+                var nbd = document.body;
+                //nbd.style.width = '1000px';
+                //nbd.style.background = "#DDFFFF";
+                var rdiv = document.createElement("div");
+                rdiv.id = "raw_data";
+                rdiv.innerHTML = overtime;
+                nbd.appendChild(rdiv);
+                var a0 = document.getElementsByTagName('a')[0];
+                a0.href = 'http://kq.oa.sumavision.com/Users.aspx?act=&Company=&bm=103&WorkerNO=' + num +
+                        '&sttim=' + stm + '&entim=' + edm + '&orderby=0&pagecount=' + days + "&intoExcel=true";
+                cal_overtime();
+});

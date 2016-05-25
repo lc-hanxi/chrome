@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "calculate overtime",
-    "version": "0.0.5",
+    "version": "0.0.9",
     "description": "Calculate overtime",
     "browser_action": {
         "default_icon":{
